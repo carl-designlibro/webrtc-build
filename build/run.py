@@ -272,7 +272,8 @@ def get_webrtc(source_dir, patch_dir, version, target,
         with cd(webrtc_source_dir):
             cmd(['gclient'])
             shutil.copyfile(os.path.join(BASE_DIR, '.gclient'), '.gclient')
-            cmd(['git', 'clone', 'https://github.com/webrtc-sdk/webrtc.git', 'src'])
+            # cmd(['git', 'clone', 'https://github.com/webrtc-sdk/webrtc.git', 'src'])
+            cmd(['git', 'clone', 'git@github.com:carl-designlibro/webrtc.git', 'src'])
             if target in ['android', 'android_prefixed']:
                 with open('.gclient', 'a') as f:
                     f.write("target_os = [ 'android' ]\n")
@@ -397,7 +398,7 @@ WEBRTC_BUILD_TARGETS_MACOS_COMMON = [
     'api/task_queue:default_task_queue_factory',
     'sdk:native_api',
     'sdk:default_codec_factory_objc',
-    'pc:peerconnection',
+    'pc:peer_connection',
     'sdk:videocapture_objc',
 ]
 WEBRTC_BUILD_TARGETS = {
@@ -417,8 +418,10 @@ def get_build_targets(target):
     return ts
 
 
-IOS_ARCHS = ['simulator:x64', 'device:arm64']
-IOS_FRAMEWORK_ARCHS = ['simulator:x64', 'simulator:arm64', 'device:arm64']
+# IOS_ARCHS = ['simulator:x64', 'device:arm64']
+# IOS_FRAMEWORK_ARCHS = ['simulator:x64', 'simulator:arm64', 'device:arm64']
+IOS_ARCHS = ['device:arm64']
+IOS_FRAMEWORK_ARCHS = ['device:arm64']
 
 
 def to_gn_args(gn_args: List[str], extra_gn_args: str) -> str:
@@ -524,9 +527,10 @@ def build_webrtc_ios(
             rm_rf(work_dir)
 
         with cd(os.path.join(webrtc_src_dir, 'tools_webrtc', 'ios')):
-            ios_deployment_target = cmdcap(
-                ['python3', '-c',
-                 f'from build_ios_libs import IOS_DEPLOYMENT_TARGET; print(IOS_DEPLOYMENT_TARGET["{device}"])'])
+            # ios_deployment_target = cmdcap(
+            #     ['python3', '-c',
+            #      f'from build_ios_libs import IOS_DEPLOYMENT_TARGET; print(IOS_DEPLOYMENT_TARGET["{device}"])'])
+            ios_deployment_target = '13.0'
 
         if not os.path.exists(os.path.join(work_dir, 'args.gn')) or gen or overlap_build_dir:
             gn_args = [
